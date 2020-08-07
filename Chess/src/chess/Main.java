@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Random;
 
 /**
  * @author Ashish Kedia and Adarsh Mohata
@@ -34,7 +35,13 @@ public class Main extends JFrame implements MouseListener
 	//Variable Declaration
 	private static final int Height=700;
 	private static final int Width=1110;
-	private static Rook wr01,wr02,br01,br02;
+	public static Rook wr01;
+
+	private static Rook wr02;
+
+	private static Rook br01;
+
+	private static Rook br02;
 	private static Knight wk01,wk02,bk01,bk02;
 	private static Bishop wb01,wb02,bb01,bb02;
 	private static Pawn wp[],bp[];
@@ -50,6 +57,7 @@ public class Main extends JFrame implements MouseListener
 	private JPanel bdetails=new JPanel(new GridLayout(3,3));
 	private JPanel wcombopanel=new JPanel();
 	private JPanel bcombopanel=new JPanel();
+	public JCheckBox checkbox960 = new JCheckBox("use 960 mode");
 	private JPanel controlPanel,WhitePlayer,BlackPlayer,temp,displayTime,showPlayer,time;
 	private JSplitPane split;
 	private JLabel label,mov;
@@ -88,8 +96,6 @@ public class Main extends JFrame implements MouseListener
 	bb02=new Bishop("BB02","Black_Bishop.png",1);
 	wq=new Queen("WQ","White_Queen.png",0);
 	bq=new Queen("BQ","Black_Queen.png",1);
-	wk=new King("WK","White_King.png",0,7,3);
-	bk=new King("BK","Black_King.png",1,0,3);
 	wp=new Pawn[8];
 	bp=new Pawn[8];
 	for(int i=0;i<8;i++)
@@ -105,7 +111,7 @@ public class Main extends JFrame implements MouseListener
 	}
 	
 	//Constructor
-	private Main()
+	public Main()
     {
 		timeRemaining=60;
 		timeSlider = new JSlider();
@@ -147,16 +153,15 @@ public class Main extends JFrame implements MouseListener
 	    WNames=Wnames.toArray(WNames);	
 		BNames=Bnames.toArray(BNames);
 		
-		Cell cell;
 		board.setBorder(BorderFactory.createLoweredBevelBorder());
-		pieces.Piece P;
+
 		content=getContentPane();
 		setSize(Width,Height);
 		setTitle("Chess");
 		content.setBackground(Color.black);
 		controlPanel=new JPanel();
 		content.setLayout(new BorderLayout());
-		controlPanel.setLayout(new GridLayout(3,3));
+		controlPanel.setLayout(new GridLayout(3,4));
 		controlPanel.setBorder(BorderFactory.createTitledBorder(null, "Statistics", TitledBorder.TOP,TitledBorder.CENTER, new Font("Lucida Calligraphy",Font.PLAIN,20), Color.ORANGE));
 		
 		//Defining the Player Box in Control Panel
@@ -203,54 +208,6 @@ public class Main extends JFrame implements MouseListener
 		controlPanel.add(WhitePlayer);
 		controlPanel.add(BlackPlayer);
 		
-		
-		//Defining all the Cells
-		boardState=new Cell[8][8];
-		for(int i=0;i<8;i++)
-			for(int j=0;j<8;j++)
-			{	
-				P=null;
-				if(i==0&&j==0)
-					P=br01;
-				else if(i==0&&j==7)
-					P=br02;
-				else if(i==7&&j==0)
-					P=wr01;
-				else if(i==7&&j==7)
-					P=wr02;
-				else if(i==0&&j==1)
-					P=bk01;
-				else if (i==0&&j==6)
-					P=bk02;
-				else if(i==7&&j==1)
-					P=wk01;
-				else if (i==7&&j==6)
-					P=wk02;
-				else if(i==0&&j==2)
-					P=bb01;
-				else if (i==0&&j==5)
-					P=bb02;
-				else if(i==7&&j==2)
-					P=wb01;
-				else if(i==7&&j==5)
-					P=wb02;
-				else if(i==0&&j==3)
-					P=bk;
-				else if(i==0&&j==4)
-					P=bq;
-				else if(i==7&&j==3)
-					P=wk;
-				else if(i==7&&j==4)
-					P=wq;
-				else if(i==1)
-				P=bp[j];
-				else if(i==6)
-					P=wp[j];
-				cell=new Cell(i,j,P);
-				cell.addMouseListener(this);
-				board.add(cell);
-				boardState[i][j]=cell;
-			}
 		showPlayer=new JPanel(new FlowLayout());  
 		showPlayer.add(timeSlider);
 		JLabel setTime=new JLabel("Set Timer(in mins):"); 
@@ -263,7 +220,8 @@ public class Main extends JFrame implements MouseListener
 		label = new JLabel("Time Starts now", JLabel.CENTER);
 		  label.setFont(new Font("SERIF", Font.BOLD, 30));
 	      displayTime=new JPanel(new FlowLayout());
-	      time=new JPanel(new GridLayout(3,3));
+	      time=new JPanel(new GridLayout(4,4));
+	      time.add(checkbox960);
 	      time.add(setTime);
 	      time.add(showPlayer);
 	      displayTime.add(start);
@@ -295,6 +253,144 @@ public class Main extends JFrame implements MouseListener
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 	
+	public Cell[][] setupBoard()
+	{
+		Cell boardState[][];
+		pieces.Piece P;
+		boardState = new Cell[8][8];
+
+		if (!checkbox960.isSelected()) {
+			for (int i = 0; i < 8; i++)
+				for (int j = 0; j < 8; j++) {
+					P = null;
+					if (i == 0 && j == 0)
+						P = br01;
+					else if (i == 0 && j == 7)
+						P = br02;
+					else if (i == 7 && j == 0)
+						P = wr01;
+					else if (i == 7 && j == 7)
+						P = wr02;
+					else if (i == 0 && j == 1)
+						P = bk01;
+					else if (i == 0 && j == 6)
+						P = bk02;
+					else if (i == 7 && j == 1)
+						P = wk01;
+					else if (i == 7 && j == 6)
+						P = wk02;
+					else if (i == 0 && j == 2)
+						P = bb01;
+					else if (i == 0 && j == 5)
+						P = bb02;
+					else if (i == 7 && j == 2)
+						P = wb01;
+					else if (i == 7 && j == 5)
+						P = wb02;
+					else if (i == 0 && j == 3)
+					{
+						bk=new King("BK","Black_King.png",1,0,3);
+						P = bk;
+					}
+					else if (i == 0 && j == 4)
+						P = bq;
+					else if (i == 7 && j == 3)
+					{
+						wk=new King("WK","White_King.png",0,7,3);
+						P = wk;
+					}
+					else if (i == 7 && j == 4)
+						P = wq;
+					else if (i == 1)
+						P = bp[j];
+					else if (i == 6)
+						P = wp[j];
+
+					boardState[i][j] = makeCell(i,j,P);
+				}
+		} 
+		else
+		{
+			ArrayList<Integer> avaliableSpaces = new ArrayList<Integer>();
+			Random rand = new Random();
+			for (int i = 0; i < 8; i++)
+				avaliableSpaces.add(i);
+			
+			//Bishops
+			Integer bishop1Pos = rand.nextInt(4) * 2;
+			Integer bishop2Pos = rand.nextInt(4) * 2 + 1;
+			avaliableSpaces.remove(bishop1Pos);
+			avaliableSpaces.remove(bishop2Pos);		
+			
+			// Queen
+			Integer queenPos = avaliableSpaces.get(rand.nextInt(avaliableSpaces.size()));
+			avaliableSpaces.remove(queenPos);
+			
+			// Knights
+			Integer knight1Pos = avaliableSpaces.get(rand.nextInt(avaliableSpaces.size()));
+			avaliableSpaces.remove(knight1Pos);
+			Integer knight2Pos = avaliableSpaces.get(rand.nextInt(avaliableSpaces.size()));
+			avaliableSpaces.remove(knight2Pos);
+			
+			//Rooks and King
+			Integer rook1Pos = avaliableSpaces.get(0);
+			Integer kingPos = avaliableSpaces.get(1);
+			Integer rook2Pos = avaliableSpaces.get(2);
+			
+			for (int i = 0; i < 8; i++)
+			{
+				for (int j = 0; j < 8; j++) 
+				{
+					if (i == 1)
+						boardState[i][j] = makeCell(i, j, bp[j]);
+					else if (i == 6)
+						boardState[i][j] = makeCell(i, j, wp[j]);
+					else if (i == 0)
+					{
+						if (j == bishop1Pos) boardState[i][j] = makeCell(i, j, bb01);
+						if (j == bishop2Pos) boardState[i][j] = makeCell(i, j, bb02);
+						if (j == queenPos)   boardState[i][j] = makeCell(i, j, bq);
+						if (j == knight1Pos) boardState[i][j] = makeCell(i, j, bk01);
+						if (j == knight2Pos) boardState[i][j] = makeCell(i, j, bk02);
+						if (j == rook1Pos)   boardState[i][j] = makeCell(i, j, br01);
+						if (j == rook2Pos)   boardState[i][j] = makeCell(i, j, br02);
+						if (j == kingPos)    
+							{
+								bk=new King("BK","Black_King.png",1,i, j);
+								boardState[i][j] = makeCell(i, j, bk);
+							}
+					}
+					else if (i == 7)
+					{
+						if (j == bishop1Pos) boardState[i][j] = makeCell(i, j, wb01);
+						if (j == bishop2Pos) boardState[i][j] = makeCell(i, j, wb02);
+						if (j == queenPos)   boardState[i][j] = makeCell(i, j, wq);
+						if (j == knight1Pos) boardState[i][j] = makeCell(i, j, wk01);
+						if (j == knight2Pos) boardState[i][j] = makeCell(i, j, wk02);
+						if (j == rook1Pos)   boardState[i][j] = makeCell(i, j, wr01);
+						if (j == rook2Pos)   boardState[i][j] = makeCell(i, j, wr02);
+						if (j == kingPos)
+							{
+								wk=new King("WK","White_King.png",0,i,j);
+								boardState[i][j] = makeCell(i, j, wk);
+							}
+					}
+					else
+						boardState[i][j] = makeCell(i, j, null);
+				}
+			}
+		}
+		return boardState;
+	}
+	
+	private Cell makeCell(int i, int j, pieces.Piece p)
+	{
+		Cell cell = new Cell(i, j, p);
+		cell.addMouseListener(this);
+		board.add(cell);
+		return cell;
+	}
+	
 	// A function to change the chance from White Player to Black Player or vice verse
 	// It is made public because it is to be accessed in the Time Class
 	public void changechance()
@@ -325,7 +421,7 @@ public class Main extends JFrame implements MouseListener
 	}
 	
 	//A function to retrieve the Black King or White King
-	private King getKing(int color)
+	public King getKing(int color)
 	{
 		if (color==0)
 			return wk;
@@ -642,6 +738,10 @@ public class Main extends JFrame implements MouseListener
 		if(White==null||Black==null)
 			{JOptionPane.showMessageDialog(controlPanel, "Fill in the details");
 			return;}
+		
+		//initialize board
+		boardState = setupBoard();
+		
 		White.updateGamesPlayed();
 		White.Update_Player();
 		Black.updateGamesPlayed();
